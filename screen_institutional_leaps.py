@@ -4,7 +4,7 @@ import numpy as np
 from datetime import datetime
 from py_vollib_vectorized import vectorized_implied_volatility, get_all_greeks
 
-def screen_leaps_with_iv(symbol, min_days=300, max_days=750):
+def screen_leaps_with_iv(symbol, min_days=300, max_days=530):
     """
     机构级 LEAP 筛选器 (IV 可视化版)
     1. 新增 'IV%' 列：显示期权的隐含波动率。
@@ -191,4 +191,4 @@ def screen_leaps_with_iv(symbol, min_days=300, max_days=750):
 
 # 运行
 if __name__ == "__main__":
-    screen_leaps_with_iv("HOOD")
+    screen_leaps_with_iv("AVGO")

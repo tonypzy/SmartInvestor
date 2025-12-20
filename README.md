@@ -42,7 +42,7 @@ SmartInvestor bridges the gap between institutional tools and retail access by i
 
 ## 📦 Installation & Setup
 
-*(Brief instructions show you know how to document software)*
+
 
 ```bash
 # Clone the repository

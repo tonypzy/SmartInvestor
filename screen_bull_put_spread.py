@@ -87,8 +87,17 @@ def screen_bull_put_spreads_advanced_ai(
 
             if short_candidates.empty: continue
 
+            SLIPPAGE_PCT = 0.15
+
             # === 匹配买入腿 ===
             for index, short_row in short_candidates.iterrows():
+                
+                # 1. 流动性检查 (Short Leg)
+                # 如果买卖价差超过买一价的 25%，说明流动性太差，跳过
+                s_spread = short_row['ask'] - short_row['bid']
+                if short_row['bid'] == 0 or (s_spread / short_row['bid']) > 0.25:
+                    continue
+
                 short_strike = short_row['strike']
                 
                 for width in spread_widths:
@@ -98,16 +107,33 @@ def screen_bull_put_spreads_advanced_ai(
                     if min_buy_strike is not None and target_long_strike < min_buy_strike:
                         continue
 
-                    long_row = chain[chain['strike'] == target_long_strike]
+                    long_row_df = chain[chain['strike'] == target_long_strike]
                     
-                    if not long_row.empty:
-                        long_row = long_row.iloc[0]
-                        net_credit = short_row['mid_price'] - long_row['mid_price']
+                    if not long_row_df.empty:
+                        long_row = long_row_df.iloc[0]
                         
+                        # 2. 流动性检查 (Long Leg)
+                        l_spread = long_row['ask'] - long_row['bid']
+                        # 深虚值期权价格低，价差比例容易很大，所以这里放宽一点限制，或者只看绝对值
+                        if l_spread > 0.50 and (l_spread / long_row['ask']) > 0.30: 
+                            continue
+
+                        # 3. 计算滑点后的成交价 (Slippage Adjusted Price)
+                        # 卖方成交价 = 中间价 - (价差 * 系数)
+                        short_fill = short_row['mid_price'] - (s_spread * SLIPPAGE_PCT)
+                        
+                        # 买方成交价 = 中间价 + (价差 * 系数)
+                        long_fill = long_row['mid_price'] + (l_spread * SLIPPAGE_PCT)
+                        
+                        # 计算保守的净权利金
+                        net_credit = short_fill - long_fill
+                        
+                        # 如果算上滑点后没利润或利润太薄，就不要了
                         if net_credit <= 0.05: continue
                         
                         max_loss = width - net_credit
                         ror = (net_credit / max_loss) * 100
+                        
                         pop = (1 - abs(short_row['delta'])) * 100
                         break_even = short_strike - net_credit
                         buffer_pct = ((current_price - break_even) / current_price) * 100
@@ -216,10 +242,9 @@ if __name__ == "__main__":
     # 2. 我不想买太便宜的垃圾期权 (min_buy_strike=580)
     
     screen_bull_put_spreads_advanced_ai(
-        "META", 
-        spread_widths=[10, 12.5, 15, 17.5, 20], 
-        min_days=20, 
-        max_days=60,
-        max_sell_strike=600, 
-        min_buy_strike=585
+        "AVGO", 
+        spread_widths=[5, 7.5, 10,12.5,15], 
+        min_days=40, 
+        max_days=61,
+        max_sell_strike=320, 
     )
