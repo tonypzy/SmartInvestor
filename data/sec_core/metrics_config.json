@@ -1,0 +1,15 @@
+{
+    "Revenue": ["RevenueFromContractWithCustomerExcludingAssessedTax", "Revenues", "SalesRevenueNet"],
+    "COGS": ["CostOfGoodsAndServicesSold", "CostOfRevenue"],
+    "Operating Income": ["OperatingIncomeLoss"],
+    "Net Income": ["NetIncomeLoss"],
+    "Operating Cash Flow": ["NetCashProvidedByUsedInOperatingActivities"],
+    "CapEx": ["PaymentsToAcquirePropertyPlantAndEquipment"],
+    "R&D": ["ResearchAndDevelopmentExpense"],
+    "Stockholders Equity": ["StockholdersEquity"],
+    "Cash": ["CashAndCashEquivalentsAtCarryingValue"],
+    "Long Term Debt": ["LongTermDebtNoncurrent"],
+    "Short Term Debt": ["ShortTermBorrowings", "LongTermDebtCurrent"],
+    "Buybacks": ["PaymentsForRepurchaseOfCommonStock", "PaymentsForRepurchaseOfEquity"],
+    "Dividends": ["PaymentsOfDividendsCommonStock", "PaymentsOfDividends"]
+}
